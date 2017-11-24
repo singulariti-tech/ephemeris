@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.singulariti.os.ephemeris.domain;
 
 import com.singulariti.os.ephemeris.utils.FormatUtils;

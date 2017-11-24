@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.singulariti.os.ephemeris.domain;
 
 import java.time.ZonedDateTime;
@@ -24,7 +23,6 @@ import java.time.ZonedDateTime;
  * @author John
  */
 public class Observatory {
-
 
     private final Place location;
     private ZonedDateTime currentTime;
