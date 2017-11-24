@@ -1,9 +1,13 @@
-package com.singulariti.os.ephemeris.utils;
+package com.singulariti.os.ephemeris;
 
 import com.singulariti.os.ephemeris.domain.Coord3D;
 import com.singulariti.os.ephemeris.domain.Observatory;
 import com.singulariti.os.ephemeris.domain.Planet;
-import com.singulariti.os.ephemeris.domain.PlanetEphemeris;
+import com.singulariti.os.ephemeris.domain.PlanetPosition;
+import com.singulariti.os.ephemeris.utils.DateTimeUtils;
+import com.singulariti.os.ephemeris.utils.FormatUtils;
+import com.singulariti.os.ephemeris.utils.MathUtils;
+import com.singulariti.os.ephemeris.utils.PlanetCatalog;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +17,7 @@ import java.util.Optional;
  *
  * @author John
  */
-public class PlanetUtils {
+public class PlanetPositionCalculator {
 
     // heliocentric xyz for planet p and observer obs
     public static Coord3D helios(Planet p, Observatory obs) {
@@ -84,32 +88,31 @@ public class PlanetUtils {
         };
     }
 
-    public List<PlanetEphemeris> getEphemeris(Planet planet, Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate, int intervalMinutes) {
-        List<PlanetEphemeris> ephemerides = new ArrayList<>();
+    public List<PlanetPosition> getEphemeris(Planet planet, Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate, int intervalMinutes) {
+        List<PlanetPosition> ephemerides = new ArrayList<>();
         ZonedDateTime currentTime = startDate;
         while (currentTime.isBefore(endDate)) {
             obs.setCurrentTime(currentTime);
-            PlanetEphemeris eph = getEphemeride(planet, obs);
+            PlanetPosition eph = getPosition(planet, obs);
             ephemerides.add(eph);
 
             currentTime = currentTime.plusMinutes(intervalMinutes);
         }
 
         obs.setCurrentTime(endDate);
-        PlanetEphemeris eph = getEphemeride(planet, obs);
+        PlanetPosition eph = getPosition(planet, obs);
         ephemerides.add(eph);
 
         return ephemerides;
     }
 
-    public PlanetEphemeris getEphemeride(Planet planet, Observatory obs) {
+    public PlanetPosition getPosition(Planet planet, Observatory obs) {
         String siteName = planet.getName();
-        Optional<Planet> earthContainer = PlanetCatalog.byName("Earth");
-        Planet earth = earthContainer.get();//Not checking for null since we are sure earth exists
+        Planet earth = PlanetCatalog.byName("Earth");
 
-        Coord3D planet_xyz = PlanetUtils.helios(planet, obs);
-        Coord3D earth_xyz = PlanetUtils.helios(earth, obs);
-        List<Double> radec = PlanetUtils.radecr(planet_xyz, earth_xyz, obs);
+        Coord3D planet_xyz = PlanetPositionCalculator.helios(planet, obs);
+        Coord3D earth_xyz = PlanetPositionCalculator.helios(earth, obs);
+        List<Double> radec = PlanetPositionCalculator.radecr(planet_xyz, earth_xyz, obs);
         double[] altaz = MathUtils.radtoaa(radec.get(0), radec.get(1), obs);
 
         String ra = FormatUtils.hmdstring(radec.get(0));
@@ -121,9 +124,9 @@ public class PlanetUtils {
         Observatory obsReset = obs.copy();
         obsReset.setCurrentTime(obs.getCurrentTime().withHour(12).withMinute(0).withSecond(0).withNano(0));
 
-        planet_xyz = PlanetUtils.helios(planet, obsReset);
+        planet_xyz = PlanetPositionCalculator.helios(planet, obsReset);
         double lst = DateTimeUtils.local_sidereal(obsReset);
-        radec = PlanetUtils.radecr(planet_xyz, earth_xyz, obsReset);
+        radec = PlanetPositionCalculator.radecr(planet_xyz, earth_xyz, obsReset);
 
         double dblRa = radec.get(0);
         double dblDec = radec.get(1);
@@ -170,7 +173,7 @@ public class PlanetUtils {
             }
         }
 
-        PlanetEphemeris eph = new PlanetEphemeris();
+        PlanetPosition eph = new PlanetPosition();
         eph.setName(siteName);
         eph.setRa(ra);
         eph.setDec(dec);

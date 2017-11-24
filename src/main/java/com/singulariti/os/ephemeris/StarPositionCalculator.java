@@ -1,8 +1,10 @@
-package com.singulariti.os.ephemeris.utils;
+package com.singulariti.os.ephemeris;
 
 import com.singulariti.os.ephemeris.domain.Observatory;
 import com.singulariti.os.ephemeris.domain.Star;
-import com.singulariti.os.ephemeris.domain.StarEphemeris;
+import com.singulariti.os.ephemeris.domain.StarPosition;
+import com.singulariti.os.ephemeris.utils.FormatUtils;
+import com.singulariti.os.ephemeris.utils.MathUtils;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,31 +13,31 @@ import java.util.List;
  *
  * @author John
  */
-public class StarUtils {
+public class StarPositionCalculator {
 
-    public StarUtils() {
+    public StarPositionCalculator() {
     }
 
-    public List<StarEphemeris> getEphemeris(Star star, Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate,
+    public List<StarPosition> getEphemeris(Star star, Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate,
             int intervalMinutes) {
-        List<StarEphemeris> ephemerides = new ArrayList<>();
+        List<StarPosition> ephemerides = new ArrayList<>();
         ZonedDateTime currentTime = startDate;
         while (currentTime.isBefore(endDate)) {
             obs.setCurrentTime(currentTime);
-            StarEphemeris eph = getEphemeride(star, obs);
+            StarPosition eph = getPosition(star, obs);
             ephemerides.add(eph);
 
             currentTime = currentTime.plusMinutes(intervalMinutes);
         }
 
         obs.setCurrentTime(endDate);
-        StarEphemeris eph = getEphemeride(star, obs);
+        StarPosition eph = getPosition(star, obs);
         ephemerides.add(eph);
 
         return ephemerides;
     }
 
-    public StarEphemeris getEphemeride(Star star, Observatory obs) {
+    public StarPosition getPosition(Star star, Observatory obs) {
         String siteName = FormatUtils.sitename(obs);
 
         String ra = star.getRa();
@@ -47,7 +49,7 @@ public class StarUtils {
         String azimuth = FormatUtils.anglestring(altaz[1], true);
         String altitude = FormatUtils.anglestring(altaz[0], false);
 
-        StarEphemeris eph = new StarEphemeris();
+        StarPosition eph = new StarPosition();
         eph.setSiteName(siteName);
         eph.setStar(star.getId());
         eph.setName(star.getTraditionalName());

@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @author John
  */
-public class SunEphemeris {
+public class SunPosition {
 
     private String siteName;
     private ZonedDateTime date;
@@ -26,7 +26,7 @@ public class SunEphemeris {
     private String astronomicalDuskTime;
     private String dstCorrected;
 
-    public SunEphemeris() {
+    public SunPosition() {
     }
 
     public String getSiteName() {

@@ -1,6 +1,7 @@
 package com.singulariti.os.ephemeris.utils;
 
 import com.singulariti.os.ephemeris.domain.Star;
+import static com.singulariti.os.ephemeris.utils.CollectionUtils.singletonCollector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -140,8 +141,8 @@ public class StarCatalog {
         return STARS.stream().filter(star -> (star.getConstellation().equalsIgnoreCase(constellation) && star.getId().equalsIgnoreCase(id))).findAny();
     }
 
-    public static Optional<Star> byName(String name) {
-        return STARS.stream().filter(star -> (star.getTraditionalName().equalsIgnoreCase(name))).findAny();
+    public static Star byName(String name) {
+        return STARS.stream().filter(star -> (star.getTraditionalName().equalsIgnoreCase(name))).collect(singletonCollector());
     }
 
 }

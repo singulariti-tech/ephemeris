@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @author John
  */
-public class StarEphemeris {
+public class StarPosition {
 
     private String siteName;
     private ZonedDateTime date;
@@ -22,7 +22,7 @@ public class StarEphemeris {
     private String type;
     private String spectralClass;
 
-    public StarEphemeris() {
+    public StarPosition() {
     }
 
     public String getSiteName() {

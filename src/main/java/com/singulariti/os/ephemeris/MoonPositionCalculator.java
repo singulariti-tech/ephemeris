@@ -1,8 +1,11 @@
-package com.singulariti.os.ephemeris.utils;
+package com.singulariti.os.ephemeris;
 
-import com.singulariti.os.ephemeris.domain.MoonEphemeris;
+import com.singulariti.os.ephemeris.domain.MoonPosition;
 import com.singulariti.os.ephemeris.domain.Observatory;
 import com.singulariti.os.ephemeris.domain.RiseSetTimes;
+import com.singulariti.os.ephemeris.utils.DateTimeUtils;
+import com.singulariti.os.ephemeris.utils.FormatUtils;
+import com.singulariti.os.ephemeris.utils.MathUtils;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +15,7 @@ import java.util.List;
  *
  * @author John
  */
-public class MoonUtils {
+public class MoonPositionCalculator {
 
     // Meeus first edition table 45.A Longitude and distance of the moon
     public static final int[] T45AD = new int[]{
@@ -360,25 +363,25 @@ public class MoonUtils {
         return times;
     }
 
-    public List<MoonEphemeris> getEphemeris(Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate, int intervalMinutes) {
-        List<MoonEphemeris> ephemerides = new ArrayList<>();
+    public List<MoonPosition> getEphemeris(Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate, int intervalMinutes) {
+        List<MoonPosition> ephemerides = new ArrayList<>();
         ZonedDateTime currentTime = startDate;
         while (currentTime.isBefore(endDate)) {
             obs.setCurrentTime(currentTime);
-            MoonEphemeris eph = getEphemeride(obs);
+            MoonPosition eph = getPosition(obs);
             ephemerides.add(eph);
 
             currentTime = currentTime.plusMinutes(intervalMinutes);
         }
 
         obs.setCurrentTime(endDate);
-        MoonEphemeris eph = getEphemeride(obs);
+        MoonPosition eph = getPosition(obs);
         ephemerides.add(eph);
 
         return ephemerides;
     }
 
-    public MoonEphemeris getEphemeride(Observatory obs) {
+    public MoonPosition getPosition(Observatory obs) {
         String siteName = FormatUtils.sitename(obs);
 
         List<Double> moontab = moonpos(obs);
@@ -393,7 +396,7 @@ public class MoonUtils {
 
         RiseSetTimes riseSetTimes = moonrise(obs);
 
-        MoonEphemeris eph = new MoonEphemeris();
+        MoonPosition eph = new MoonPosition();
         eph.setSiteName(siteName);
         eph.setDate(obs.getCurrentTime());
         eph.setRa(ra);

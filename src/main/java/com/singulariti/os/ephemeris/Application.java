@@ -1,21 +1,17 @@
 package com.singulariti.os.ephemeris;
 
-import com.singulariti.os.ephemeris.domain.MoonEphemeris;
+import com.singulariti.os.ephemeris.domain.MoonPosition;
 import com.singulariti.os.ephemeris.domain.Observatory;
 import com.singulariti.os.ephemeris.domain.Place;
 import com.singulariti.os.ephemeris.domain.Planet;
-import com.singulariti.os.ephemeris.domain.PlanetEphemeris;
+import com.singulariti.os.ephemeris.domain.PlanetPosition;
 import com.singulariti.os.ephemeris.domain.Pole;
 import com.singulariti.os.ephemeris.domain.Star;
-import com.singulariti.os.ephemeris.domain.StarEphemeris;
-import com.singulariti.os.ephemeris.domain.SunEphemeris;
+import com.singulariti.os.ephemeris.domain.StarPosition;
+import com.singulariti.os.ephemeris.domain.SunPosition;
 import com.singulariti.os.ephemeris.utils.FormatUtils;
-import com.singulariti.os.ephemeris.utils.MoonUtils;
 import com.singulariti.os.ephemeris.utils.PlanetCatalog;
-import com.singulariti.os.ephemeris.utils.PlanetUtils;
 import com.singulariti.os.ephemeris.utils.StarCatalog;
-import com.singulariti.os.ephemeris.utils.StarUtils;
-import com.singulariti.os.ephemeris.utils.SunUtils;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -34,46 +30,46 @@ public class Application {
     }
 
     public void generateSunEphemeris(Observatory obs, ZonedDateTime start, ZonedDateTime end) {
-        SunUtils sun = new SunUtils();
-        List<SunEphemeris> ephemerides = sun.getEphemeris(obs, start, end, 10);
+        SunPositionCalculator sun = new SunPositionCalculator();
+        List<SunPosition> ephemerides = sun.getPosition(obs, start, end, 10);
         printSunEphemeris(ephemerides);
     }
 
-    void printSunEphemeris(List<SunEphemeris> ephs) {
-        System.out.println(SunEphemeris.header());
+    void printSunEphemeris(List<SunPosition> ephs) {
+        System.out.println(SunPosition.header());
         ephs.stream().forEach(e -> System.out.println(e));
     }
 
     public void generatePlanetEphemeris(Planet planet, Observatory obs, ZonedDateTime start, ZonedDateTime end) {
-        PlanetUtils planetCalc = new PlanetUtils();
-        List<PlanetEphemeris> ephemerides = planetCalc.getEphemeris(planet, obs, start, end, 10);
+        PlanetPositionCalculator planetCalc = new PlanetPositionCalculator();
+        List<PlanetPosition> ephemerides = planetCalc.getEphemeris(planet, obs, start, end, 10);
         printPlanetEphemeris(ephemerides);
     }
 
-    void printPlanetEphemeris(List<PlanetEphemeris> ephs) {
-        System.out.println(PlanetEphemeris.header());
+    void printPlanetEphemeris(List<PlanetPosition> ephs) {
+        System.out.println(PlanetPosition.header());
         ephs.stream().forEach(e -> System.out.println(e));
     }
 
     public void generateMoonEphemeris(Observatory obs, ZonedDateTime start, ZonedDateTime end) {
-        MoonUtils moonCalc = new MoonUtils();
-        List<MoonEphemeris> ephemerides = moonCalc.getEphemeris(obs, start, end, 10);
+        MoonPositionCalculator moonCalc = new MoonPositionCalculator();
+        List<MoonPosition> ephemerides = moonCalc.getEphemeris(obs, start, end, 10);
         printMoonEphemeris(ephemerides);
     }
 
-    void printMoonEphemeris(List<MoonEphemeris> ephs) {
-        System.out.println(MoonEphemeris.header());
+    void printMoonEphemeris(List<MoonPosition> ephs) {
+        System.out.println(MoonPosition.header());
         ephs.stream().forEach(e -> System.out.println(e));
     }
 
     public void generateStarEphemeris(Star star, Observatory obs, ZonedDateTime start, ZonedDateTime end) {
-        StarUtils starCalc = new StarUtils();
-        List<StarEphemeris> ephemerides = starCalc.getEphemeris(star, obs, start, end, 10);
+        StarPositionCalculator starCalc = new StarPositionCalculator();
+        List<StarPosition> ephemerides = starCalc.getEphemeris(star, obs, start, end, 10);
         printStarEphemeris(ephemerides);
     }
 
-    void printStarEphemeris(List<StarEphemeris> ephs) {
-        System.out.println(StarEphemeris.header());
+    void printStarEphemeris(List<StarPosition> ephs) {
+        System.out.println(StarPosition.header());
         ephs.stream().forEach(e -> System.out.println(e));
     }
 
@@ -102,17 +98,15 @@ public class Application {
         System.out.println("=========================================================================================");
         System.out.println(" SUN");
         System.out.println("=========================================================================================");
-        
+
         application.generateSunEphemeris(obs, start, end);
 
         System.out.println("=========================================================================================");
         System.out.println(" MARS");
         System.out.println("=========================================================================================");
 
-        Optional<Planet> marsContainer = PlanetCatalog.byName("Mars");
-        if (marsContainer.isPresent()) {
-            application.generatePlanetEphemeris(marsContainer.get(), obs, start, end);
-        }
+        Planet mars = PlanetCatalog.byName("Mars");
+        application.generatePlanetEphemeris(mars, obs, start, end);
 
         System.out.println("=========================================================================================");
         System.out.println(" MOON");

@@ -1,10 +1,14 @@
-package com.singulariti.os.ephemeris.utils;
+package com.singulariti.os.ephemeris;
 
 import com.singulariti.os.ephemeris.domain.Coord3D;
 import com.singulariti.os.ephemeris.domain.Observatory;
 import com.singulariti.os.ephemeris.domain.Planet;
 import com.singulariti.os.ephemeris.domain.RiseSetTimes;
-import com.singulariti.os.ephemeris.domain.SunEphemeris;
+import com.singulariti.os.ephemeris.domain.SunPosition;
+import com.singulariti.os.ephemeris.utils.DateTimeUtils;
+import com.singulariti.os.ephemeris.utils.FormatUtils;
+import com.singulariti.os.ephemeris.utils.MathUtils;
+import com.singulariti.os.ephemeris.utils.PlanetCatalog;
 import static com.singulariti.os.ephemeris.utils.DateTimeUtils.jd;
 import static com.singulariti.os.ephemeris.utils.FormatUtils.hmstring;
 import static com.singulariti.os.ephemeris.utils.MathUtils.cosd;
@@ -18,9 +22,9 @@ import java.util.Optional;
  *
  * @author John
  */
-public class SunUtils {
+public class SunPositionCalculator {
 
-    public SunUtils() {
+    public SunPositionCalculator() {
     }
 
     // Nutation in longitude and obliquity, returns seconds
@@ -62,8 +66,8 @@ public class SunUtils {
 
     public double EoT(Observatory obs, Planet earth) {
         Coord3D sun_xyz = new Coord3D(0.0, 0.0, 0.0);
-        Coord3D earth_xyz = PlanetUtils.helios(earth, obs);
-        List<Double> radec = PlanetUtils.radecr(sun_xyz, earth_xyz, obs);
+        Coord3D earth_xyz = PlanetPositionCalculator.helios(earth, obs);
+        List<Double> radec = PlanetPositionCalculator.radecr(sun_xyz, earth_xyz, obs);
         double T = (jd(obs) - 2451545.0) / 365250;
         double T2 = T * T;
         double T3 = T2 * T;
@@ -92,9 +96,9 @@ public class SunUtils {
         ZonedDateTime obsDT = obscopy.getCurrentTime();
         obscopy.setCurrentTime(obsDT.withHour(12).withMinute(0).withSecond(0).withNano(0));
         double lst = DateTimeUtils.local_sidereal(obscopy);
-        Coord3D earth_xyz = PlanetUtils.helios(earth, obscopy);
+        Coord3D earth_xyz = PlanetPositionCalculator.helios(earth, obscopy);
         Coord3D sun_xyz = new Coord3D(0.0, 0.0, 0.0);
-        List<Double> radec = PlanetUtils.radecr(sun_xyz, earth_xyz, obscopy);
+        List<Double> radec = PlanetPositionCalculator.radecr(sun_xyz, earth_xyz, obscopy);
         double UTsun = 12.0 + radec.get(0) - lst;
         if (UTsun < 0.0) {
             UTsun += 24.0;
@@ -131,33 +135,32 @@ public class SunUtils {
         return riseset;
     }
 
-    public List<SunEphemeris> getEphemeris(Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate, 
+    public List<SunPosition> getPosition(Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate,
             int intervalMinutes) {
-        List<SunEphemeris> ephemerides = new ArrayList<>();
+        List<SunPosition> ephemerides = new ArrayList<>();
         ZonedDateTime currentTime = startDate;
         while (currentTime.isBefore(endDate)) {
             obs.setCurrentTime(currentTime);
-            SunEphemeris eph = getEphemeride(obs);
+            SunPosition eph = getEphemeride(obs);
             ephemerides.add(eph);
 
             currentTime = currentTime.plusMinutes(intervalMinutes);
         }
 
         obs.setCurrentTime(endDate);
-        SunEphemeris eph = getEphemeride(obs);
+        SunPosition eph = getEphemeride(obs);
         ephemerides.add(eph);
 
         return ephemerides;
     }
 
-    public SunEphemeris getEphemeride(Observatory obs) {
+    public SunPosition getEphemeride(Observatory obs) {
         String siteName = FormatUtils.sitename(obs);
-        Optional<Planet> earthContainer = PlanetCatalog.byName("Earth");
-        Planet earth = earthContainer.get();//Not checking for null since we are sure earth exists
+        Planet earth = PlanetCatalog.byName("Earth");
 
         Coord3D sun_xyz = new Coord3D(0.0, 0.0, 0.0);
-        Coord3D earth_xyz = PlanetUtils.helios(earth, obs);
-        List<Double> radec = PlanetUtils.radecr(sun_xyz, earth_xyz, obs);
+        Coord3D earth_xyz = PlanetPositionCalculator.helios(earth, obs);
+        List<Double> radec = PlanetPositionCalculator.radecr(sun_xyz, earth_xyz, obs);
         double[] altaz = MathUtils.radtoaa(radec.get(0), radec.get(1), obs);
 
         String ra = FormatUtils.hmdstring(radec.get(0));
@@ -171,7 +174,7 @@ public class SunUtils {
         RiseSetTimes nauticalRiseSetTimes = sunrise(obs, -12.0, earth);
         RiseSetTimes astronomicalRiseSetTimes = sunrise(obs, -18.0, earth);
 
-        SunEphemeris eph = new SunEphemeris();
+        SunPosition eph = new SunPosition();
         eph.setSiteName(siteName);
         eph.setDate(obs.getCurrentTime());
         eph.setRa(ra);

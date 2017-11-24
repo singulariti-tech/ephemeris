@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @author John
  */
-public class PlanetEphemeris {
+public class PlanetPosition {
 
     private String name;
     private ZonedDateTime date;
@@ -20,7 +20,7 @@ public class PlanetEphemeris {
     private String transit;
     private String set;
 
-    public PlanetEphemeris() {
+    public PlanetPosition() {
     }
 
     public String getName() {

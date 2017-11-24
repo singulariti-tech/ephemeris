@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @author John
  */
-public class MoonEphemeris {
+public class MoonPosition {
 
     private String siteName;
     private ZonedDateTime date;
@@ -21,7 +21,7 @@ public class MoonEphemeris {
     private String riseTime;
     private String setTime;
 
-    public MoonEphemeris() {
+    public MoonPosition() {
     }
 
     public String getSiteName() {

@@ -1,11 +1,10 @@
 package com.singulariti.os.ephemeris.utils;
 
 import com.singulariti.os.ephemeris.domain.Planet;
-import static com.singulariti.os.ephemeris.utils.LambdaUtils.singletonCollector;
+import static com.singulariti.os.ephemeris.utils.CollectionUtils.singletonCollector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
  *
@@ -120,7 +119,7 @@ public class PlanetCatalog {
         ));
     }
 
-    public static Optional<Planet> byName(String name) {
-        return Optional.ofNullable(PLANETS.stream().filter(p -> p.getName().equalsIgnoreCase(name)).collect(singletonCollector()));
+    public static Planet byName(String name) {
+        return PLANETS.stream().filter(p -> p.getName().equalsIgnoreCase(name)).collect(singletonCollector());
     }
 }
