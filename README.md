@@ -27,6 +27,8 @@ Sample code below shows how you can use each of the calculators to generate the 
 
 The location on Earth from where you want to view the astronomical body
 
+~~~~
+
 // Create an instance of the observatory
 double latitude = 13.0068;
 double longitude = 76.0996;
@@ -36,9 +38,13 @@ ZonedDateTime time = ZonedDateTime.of(2017, 11, 7, 0, 0, 0, 0, ZoneId.of("UTC"))
 Place place = new Place("Hassan", latitude, Pole.NORTH, longitude, Pole.EAST, TimeZone.getTimeZone("Asia/Calcutta"), "", "");
 Observatory hassan = new Observatory(place, time); //observatory is a place at a specific time
 
+~~~~
+
 ## Sun Position
 
 Calculating position of the sun as viewed from the Observatory
+
+~~~~
 
 // Create an instance of the Sun position calculator
 SunPositionCalculator solarCalc = new SunPositionCalculator();
@@ -49,18 +55,28 @@ sunPosition.getSetTime(); //Set time
 sunPosition.getAzimuth(); //Azimuth
 sunPosition.getAltitude(); //Elevation
 
+~~~~
+
 There's a convenience method to generate the Ephemeris for a period.
+
+~~~~
 
 int timeIntervalInMinutes = 10; //Positions to be calculated every 10 minutes from the start time
 ZonedDateTime anotherTime = ZonedDateTime.of(2017, 11, 8, 0, 0, 0, 0, ZoneId.of("UTC")); //Date and time in UTC
 List<SunPosition> ephemerides = sun.getEphemeris(obs, time, anotherTime, timeIntervalInMinutes);
 
+~~~~
+
 ## Moon Position
 
 Calculating position of the moon as viewed from the Observatory
 
+~~~~
+
 MoonPositionCalculator lunarCalc = new MoonPositionCalculator();
 MoonPosition moonPosition = lunarCalc.getPosition(hassan);
+
+~~~~
 
 You can generate the Ephemeris with a specified interval as with the SunCalculator.
 
@@ -68,9 +84,13 @@ You can generate the Ephemeris with a specified interval as with the SunCalculat
 
 Calculating position of a planet as viewed from the Observatory
 
+~~~~
+
 PlanetPositionCalculator planetCalc = new PlanetPositionCalculator();
 Planet mars = PlanetCatalog.byName("Mars");
 PlanetPosition marsPosition = planetCalc.getPosition(mars, hassan);
+
+~~~~
 
 The Ephemeris can be generated as with the SunCalculator.
 
@@ -78,9 +98,13 @@ The Ephemeris can be generated as with the SunCalculator.
 
 Calculating the position of a Star as viewed from the Observatory
 
+~~~~
+
 StarCalculator starCalculator = new StarCalculator();
 Star casA = StarCatalog.byIdAndConstellation("a", "cas");
 StarPosition casAPosition = starCalc.getPosition(casA, hassan);
+
+~~~~
 
 The Ephemeris can be generated as with the SunCalculator.
 
