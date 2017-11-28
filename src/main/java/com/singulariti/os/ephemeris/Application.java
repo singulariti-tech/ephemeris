@@ -35,8 +35,6 @@ import java.util.Optional;
 import java.util.TimeZone;
 
 /**
- * ?Name=%27Hyderabad%27&Lat=17.3848&Lon=78.4906&TZ=5.5&DST=false
- * ?Name=%27Hassan%27&Lat=13.0068&Lon=76.0996&TZ=5.5&DST=false
  *
  * @author John
  */
@@ -47,7 +45,7 @@ public class Application {
 
     public void generateSunEphemeris(Observatory obs, ZonedDateTime start, ZonedDateTime end) {
         SunPositionCalculator sun = new SunPositionCalculator();
-        List<SunPosition> ephemerides = sun.getPosition(obs, start, end, 10);
+        List<SunPosition> ephemerides = sun.getEphemeris(obs, start, end, 10);
         printSunEphemeris(ephemerides);
     }
 
@@ -134,9 +132,8 @@ public class Application {
         System.out.println(" CAS A");
         System.out.println("=========================================================================================");
 
-        Optional<Star> casAContainer = StarCatalog.byIdAndConstellation("a", "cas");
-        if (casAContainer.isPresent()) {
-            Star casA = casAContainer.get();
+        Star casA = StarCatalog.byIdAndConstellation("a", "cas");
+        if (casA != null) {
             application.generateStarEphemeris(casA, obs, start, end);
         }
 

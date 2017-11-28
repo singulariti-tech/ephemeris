@@ -153,8 +153,8 @@ public class StarCatalog {
         return STARS;
     }
 
-    public static Optional<Star> byIdAndConstellation(String id, String constellation) {
-        return STARS.stream().filter(star -> (star.getConstellation().equalsIgnoreCase(constellation) && star.getId().equalsIgnoreCase(id))).findAny();
+    public static Star byIdAndConstellation(String id, String constellation) {
+        return STARS.stream().filter(star -> (star.getConstellation().equalsIgnoreCase(constellation) && star.getId().equalsIgnoreCase(id))).collect(singletonCollector());
     }
 
     public static Star byName(String name) {

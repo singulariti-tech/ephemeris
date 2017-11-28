@@ -151,26 +151,26 @@ public class SunPositionCalculator {
         return riseset;
     }
 
-    public List<SunPosition> getPosition(Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate,
+    public List<SunPosition> getEphemeris(Observatory obs, ZonedDateTime startDate, ZonedDateTime endDate,
             int intervalMinutes) {
         List<SunPosition> ephemerides = new ArrayList<>();
         ZonedDateTime currentTime = startDate;
         while (currentTime.isBefore(endDate)) {
             obs.setCurrentTime(currentTime);
-            SunPosition eph = getEphemeride(obs);
+            SunPosition eph = getPosition(obs);
             ephemerides.add(eph);
 
             currentTime = currentTime.plusMinutes(intervalMinutes);
         }
 
         obs.setCurrentTime(endDate);
-        SunPosition eph = getEphemeride(obs);
+        SunPosition eph = getPosition(obs);
         ephemerides.add(eph);
 
         return ephemerides;
     }
 
-    public SunPosition getEphemeride(Observatory obs) {
+    public SunPosition getPosition(Observatory obs) {
         String siteName = FormatUtils.sitename(obs);
         Planet earth = PlanetCatalog.byName("Earth");
 
